@@ -64,6 +64,7 @@ source:
 targets:
 	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.1.creFlussTargets.sql
 	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.2.creFlussTargets.sql
+	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.3.creFlussTargets.sql
 
 
 # Run Python app  101,104 - North

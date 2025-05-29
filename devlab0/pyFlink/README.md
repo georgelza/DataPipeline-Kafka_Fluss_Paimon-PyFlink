@@ -41,12 +41,19 @@ in devlab0/ directory
 ### Lab 2
 
 1. `make jm `- This will open our Flink Jobmanager container and place us at a terminal. 
-2. You can now navigate to your Flink console by opening a browser and going to `localhost:8083`, you should see the job running state.
-3. Open `devlab0/pyFlink/flink_flat1.cmd` and copy/past the first command or second (dependent on which script in #6 nd #7 you ran above) into the jobmanager terminal.
-4. You can also open Flink Sql by executing `make fsql` and line for line copy/pasting the contents of `devlab0/pyFlink/flink_flat1.sql`
-5. After a wile you should be seeing the inserted records start streaming.
+2. Open `devlab0/pyFlink/flink_flat1.cmd` and copy/past the first command or second (dependent on which script in #6 nd #7 you ran above) into the jobmanager terminal.
+3. You can now navigate to your Flink console by opening a browser and going to `localhost:8083`, you should see the job running state.3. 
+4. You can also open Flink Sql by executing `make fsql` and line for line copy/pasting the contents of `devlab0/pyFlink/flink_flat1.sql`. After a wile you should be seeing the inserted records start streaming.
 
 
 ### Lab 3
 
-As per above, but now for `devlab0/pyFlink/flink_avg1.py` and `devlab0/pyFlink/flink_avg1.sql`
+As per above, but now for `devlab0/pyFlink/flink_flat2.cmd`, `devlab0/pyFlink/flink_flat2.py` & `devlab0/pyFlink/flink_flat2.sql`  
+
+### Lab 4
+
+As per above, but now for `devlab0/pyFlink/flink_flat3.cmd`, `devlab0/pyFlink/flink_flat3.py` & `devlab0/pyFlink/flink_flat3.sql`  
+
+### Lab 5
+
+As per above, but now for `devlab0/pyFlink/flink_avg1.cmd`, `devlab0/pyFlink/flink_avg1.py` & `devlab0/pyFlink/flink_avg1.sql`

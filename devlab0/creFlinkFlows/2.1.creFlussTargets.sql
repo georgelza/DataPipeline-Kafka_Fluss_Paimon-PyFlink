@@ -5,7 +5,7 @@ SET 'sql-client.verbose' = 'true';
 SET 'execution.runtime-mode' = 'streaming';
 
 
-# Used as output table during our flink_flat#.py jobs
+-- Used as output table during our flink_flat1 and 2.py jobs
 
 CREATE OR REPLACE TABLE fluss_catalog.fluss.factory_iot_unnested (
      ts                 BIGINT
@@ -18,7 +18,7 @@ CREATE OR REPLACE TABLE fluss_catalog.fluss.factory_iot_unnested (
     ,longitude          DOUBLE
     ,deviceType         STRING
     ,measurement        DOUBLE
-    ,partition_month    STRING                  -- must be provided by upstream or insert logic
+    ,partition_month    STRING                
     ,ts_wm              AS TO_TIMESTAMP_LTZ(ts, 3)
     ,WATERMARK          FOR ts_wm AS ts_wm - INTERVAL '1' MINUTE
 ) PARTITIONED BY (partition_month) WITH (
@@ -29,7 +29,6 @@ CREATE OR REPLACE TABLE fluss_catalog.fluss.factory_iot_unnested (
 );
 
 
--- Add Partitions, 2022/06
 
 ALTER TABLE fluss_catalog.fluss.factory_iot_unnested ADD PARTITION (partition_month = '202205');
 ALTER TABLE fluss_catalog.fluss.factory_iot_unnested ADD PARTITION (partition_month = '202206');

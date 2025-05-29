@@ -5,7 +5,7 @@
 #
 #                       :   A different approach vs a traditional connector method.
 #
-#   File                :   flink_flat1.py
+#   File                :   flink_flat2.py
 #
 #   Description         :   Building sort of the following. Source IoT documents from a Python data generator, publish these to Kafka topic, 
 #                       :   Source from Kafka into flink using a kafka connector, 
@@ -26,7 +26,8 @@
 #
 #   /opt/flink/bin/flink run \
 #        -m jobmanager:8081 \
-#        -py /path/to/flink_flat1.py \
+#        -py /path/to/flink_flat2.py \
+#        -pyfs /pyapp/upper_udf.py \
 #        -j /opt/flink/lib/flink/flink-sql-connector-kafka-3.3.0-1.20.jar \
 #         --siteId 101 \
 #         --source factory_iot_north
@@ -42,20 +43,27 @@ __version__     = "1.0.0"
 __copyright__   = "Copyright 2025, - G Leonard"
 
 
+from pyflink.table.udf import ScalarFunction # Changed from TableFunction
 from pyflink.table import TableEnvironment, EnvironmentSettings
+from pyflink.table.expressions import call
 from pyflink.common import Configuration
 import sys, argparse
 
+# Import the new function-based UDF
+from upper_udf import uppercase_string_udf
 
 DEFAULT_BOOTSTRAP = 'broker:29092'
 
+
 # --------------------------------------------------------------------------
-# Source, Flatten and output to Fluss table
+# In this version we going to implement a very simply inline User Defined Function that will upper case out unit value.
+# This is purely to show the scafolding required. As once we know that the UDF can be used to do anything, call AI/ML engines.
+# Do lookups out of a in memory datastore like Fluss itself, do any API if some conditions are met...
 # --------------------------------------------------------------------------
 def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
         
         
-    pipeline_name = f"Flink_flat1-{input_kafka_topic}-{site_id_filter}"
+    pipeline_name = f"Flink_flat2-{input_kafka_topic}-{site_id_filter}"
 
     print(f"Starting {pipeline_name}.py")
     
@@ -71,14 +79,15 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
         .with_configuration(config) \
         .build()
 
-    t_env  = TableEnvironment.create(env_settings)
+    t_env = TableEnvironment.create(env_settings)
 
 
     # --------------------------------------------------------------------------
     # Add Kafka connector JARs
     # --------------------------------------------------------------------------
     kafka_connector_jar = "file:///opt/flink/lib/flink/flink-sql-connector-kafka-3.3.0-1.20.jar" # Adjust version and path
-    t_env.get_config().set("pipeline.jars", kafka_connector_jar)
+    flink_python_jar    = "file:///opt/flink/opt/flink-python-1.20.1.jar" 
+    t_env.get_config().set("pipeline.jars", f"{kafka_connector_jar};{flink_python_jar}")
 
 
     # --------------------------------------------------------------------------
@@ -123,7 +132,7 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
             'connector'                     = 'kafka',
             'topic'                         = '{input_kafka_topic}',
             'properties.bootstrap.servers'  = '{bootstrap_servers}',
-            'properties.group.id'           = 'flat1_{site_id_filter}',
+            'properties.group.id'           = 'flat2_{site_id_filter}',
             'scan.startup.mode'             = 'earliest-offset',
             'format'                        = 'json',
             'json.fail-on-missing-field'    = 'false',
@@ -136,13 +145,26 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
     
     
     # --------------------------------------------------------------------------
+    # Register the new ScalarFunction
+    # --------------------------------------------------------------------------
+    t_env.create_temporary_system_function(
+        "uppercase_unit_udf", # Name for the scalar UDF in SQL
+        uppercase_string_udf  # Reference the imported function directly
+    )
+ 
+
+    # --------------------------------------------------------------------------
     # We accepting that the target output table has been pre created
+    # Normally we would create a output table, We're not, we're just going to insert
+    # into a pre existing table.
     # --------------------------------------------------------------------------
     
     
     
     # --------------------------------------------------------------------------
-    # Flatten Input stream and output to Fluss
+    # Flatten Input stream and output to Fluss, we also call our UDF on the unit column.
+    # as example, this could have been the measurement column, returning a action or status 
+    # code.
     # --------------------------------------------------------------------------
     if site_id_filter == 101 or site_id_filter == 104:              # North
         flat_sql = f"""
@@ -153,7 +175,7 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
                     ,metadata.siteId                                AS siteId
                     ,metadata.deviceId                              AS deviceId
                     ,metadata.sensorId                              AS sensorId
-                    ,metadata.unit                                  AS unit
+                    ,uppercase_unit_udf(metadata.unit)              AS unit -- Apply UDF here
                     ,cast(NULL as STRING)                           AS ts_human
                     ,cast(NULL as DOUBLE)                           AS latitude
                     ,cast(NULL as DOUBLE)                           AS longitude
@@ -161,9 +183,9 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
                     ,measurement                                    AS measurement
                     ,DATE_FORMAT(TO_TIMESTAMP_LTZ(ts, 3), 'yyyyMM') AS partition_month
                 FROM kafka_source
-                WHERE metadata.siteId = {site_id_filter}; -- Filter using direct access
+                WHERE metadata.siteId = {site_id_filter}; 
         """
-        
+           
     elif site_id_filter == 102 or site_id_filter == 105:            # South
         flat_sql = f"""
             INSERT INTO fluss_catalog.fluss.factory_iot_unnested
@@ -173,7 +195,7 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
                     ,metadata.siteId                                AS siteId
                     ,metadata.deviceId                              AS deviceId
                     ,metadata.sensorId                              AS sensorId
-                    ,metadata.unit                                  AS unit
+                    ,uppercase_unit_udf(metadata.unit)              AS unit -- Apply UDF here
                     ,metadata.ts_human                              AS ts_human
                     ,metadata.location.latitude                     AS latitude
                     ,metadata.location.longitude                    AS longitude
@@ -181,7 +203,7 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
                     ,measurement                                    AS measurement
                     ,DATE_FORMAT(TO_TIMESTAMP_LTZ(ts, 3), 'yyyyMM') AS partition_month
                 FROM kafka_source
-                WHERE metadata.siteId = {site_id_filter}; -- Filter using direct access
+                WHERE metadata.siteId = {site_id_filter}; 
          """
          
     elif site_id_filter == 103 or site_id_filter ==106:             # East
@@ -193,7 +215,7 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
                     ,metadata.siteId                                AS siteId
                     ,metadata.deviceId                              AS deviceId
                     ,metadata.sensorId                              AS sensorId
-                    ,metadata.unit                                  AS unit
+                    ,uppercase_unit_udf(metadata.unit)              AS unit -- Apply UDF here
                     ,metadata.ts_human                              AS ts_human
                     ,metadata.location.latitude                     AS latitude
                     ,metadata.location.longitude                    AS longitude
@@ -201,9 +223,10 @@ def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
                     ,measurement                                    AS measurement
                     ,DATE_FORMAT(TO_TIMESTAMP_LTZ(ts, 3), 'yyyyMM') AS partition_month
                 FROM kafka_source
-                WHERE metadata.siteId = {site_id_filter}; -- Filter using direct access
+                WHERE metadata.siteId = {site_id_filter}; 
         """
     #end if
+        
         
     statement_set.add_insert_sql(flat_sql)
 

@@ -37,6 +37,7 @@ devlab0/conf/flink/lib/flink/*
 devlab0/conf/flink/lib/fluss/*
 devlab0/conf/flink/lib/hive/*
 
+devlab0/pyFlink/__pycache__/*
 devlab0/data/*
 
 infrastructure/build-hdfs-openjdk11/base/stage/*

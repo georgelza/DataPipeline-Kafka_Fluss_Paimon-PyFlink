@@ -49,7 +49,9 @@ import sys, argparse
 
 DEFAULT_BOOTSTRAP = 'broker:29092'
 
-
+# --------------------------------------------------------------------------
+# Source, Flatten and output to Kafka topic
+# --------------------------------------------------------------------------
 def main(site_id_filter: int, input_kafka_topic: str, bootstrap_servers: str):
     
     output_kafka_topic = f"{input_kafka_topic}_{site_id_filter}"
