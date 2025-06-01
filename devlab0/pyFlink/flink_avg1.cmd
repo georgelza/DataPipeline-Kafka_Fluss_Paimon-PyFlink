@@ -10,7 +10,6 @@ make jm
 /opt/flink/bin/flink run \
     -m jobmanager:8081 \
     -py /pyapp/flink_avg1.py \
-    -j /opt/flink/lib/flink/flink-sql-connector-kafka-3.3.0-1.20.jar \
     --siteId 101 \
     --source factory_iot_north 
 
@@ -18,7 +17,6 @@ make jm
 /opt/flink/bin/flink run \
     -m jobmanager:8081 \
     -py /pyapp/flink_avg1.py \
-    -j /opt/flink/lib/flink/flink-sql-connector-kafka-3.3.0-1.20.jar \
     --siteId 102 \
     --source factory_iot_south
 
@@ -26,6 +24,5 @@ make jm
 /opt/flink/bin/flink run \
     -m jobmanager:8081 \
     -py /pyapp/flink_avg1.py \
-    -j /opt/flink/lib/flink/flink-sql-connector-kafka-3.3.0-1.20.jar \
     --siteId 103 \
     --source factory_iot_east

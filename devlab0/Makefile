@@ -50,7 +50,7 @@ run:
 		zookeeper coordinator-server tablet-server-0 tablet-server-1 tablet-server-2 \
 		 --remove-orphans 
 
-deploy: createcat createtopics source targets
+deploy: createtopics createcat source targets
 
 createtopics:
 	./creTopics/creTopics.sh
@@ -65,6 +65,7 @@ targets:
 	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.1.creFlussTargets.sql
 	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.2.creFlussTargets.sql
 	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.3.creFlussTargets.sql
+	docker compose exec jobmanager /opt/flink/bin/sql-client.sh -f /sql/2.4.creFlussTargets.sql
 
 
 # Run Python app  101,104 - North

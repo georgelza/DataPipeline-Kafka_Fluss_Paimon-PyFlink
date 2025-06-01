@@ -10,7 +10,7 @@
     "historic_data_start_datetime": "2024-10-15T08:00",
     "reccap": 300,
     "flush_size": 150,
-    "sleeptime": 5000,
+    "sleeptime": 4000,
     "devices": [
       {
         "deviceId": 1001,
@@ -20,7 +20,7 @@
         "sfd_end_time": "16:00",
         "sensors": [
           {"sensorId": 10001, "min_range": 60, "max_range": 100, "unit": "Celcius", "sensorType": "temperature", "sd": 5, "mean": 75},
-          {"sensorId": 10002, "min_range": 60, "max_range": 100, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 75},
+          {"sensorId": 10002, "min_range": 40, "max_range": 100, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 70, "deviation_weight": 8},
           {"sensorId": 10003, "min_range": 28, "max_range": 56, "unit": "Psi", "sensorType": "pressure", "sd": 10, "mean": 35},
           {"sensorId": 10004, "min_range": 2500, "max_range": 3000, "unit": "RPM", "sensorType": "revolutions", "sd": 100, "mean": 2750}            
         ]
@@ -33,8 +33,8 @@
         "sfd_end_time": "16:00",
         "sensors": [
           {"sensorId": 10011, "min_range": 60, "max_range": 80, "unit": "Celcius", "sensorType": "temperature", "sd": 5, "mean": 70},
-          {"sensorId": 10012, "min_range": 70, "max_range": 100, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 80},
-          {"sensorId": 10013, "min_range": 14, "max_range": 56, "unit": "Psi", "sensorType": "pressure", "sd": 5, "mean": 40}
+          {"sensorId": 10012, "min_range": 70, "max_range": 150, "unit": "Celcius", "sensorType": "temperature", "sd": 30, "mean": 80},
+          {"sensorId": 10013, "min_range": 14, "max_range": 56, "unit": "Psi", "sensorType": "pressure", "sd": 4, "mean": 40, "deviation_weight": 3}
         ]
       },
       {
@@ -45,9 +45,9 @@
         "sfd_end_time": "16:00",	      
         "sensors": [
           {"sensorId": 10021, "min_range": 600, "max_range": 800, "unit": "Celcius", "sensorType": "temperature", "sd": 20, "mean": 700},
-          {"sensorId": 10022, "min_range": 160, "max_range": 200, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 180},
+          {"sensorId": 10022, "min_range": 160, "max_range": 200, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 180, "deviation_weight": 4},
           {"sensorId": 10023, "min_range": 28, "max_range": 56, "unit": "Psi", "sensorType": "pressure", "sd": 10, "mean": 100},
-          {"sensorId": 10025, "min_range": 5, "max_range": 15, "unit": "Liter", "sensorType": "volume", "sd": 4, "mean": 10},
+          {"sensorId": 10025, "min_range": 5, "max_range": 15, "unit": "Liter", "sensorType": "volume", "sd": 4, "mean": 10, "deviation_weight": 4},
           {"sensorId": 10045, "min_range": 2000, "max_range": 3000, "unit": "L/min", "sensorType": "flow_rate", "sd": 30, "mean": 2400}
         ]
       },
@@ -62,7 +62,7 @@
           {"sensorId": 10032, "min_range": 850, "max_range": 950, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 900},
           {"sensorId": 10033, "min_range": 2000, "max_range": 2400, "unit": "Psi", "sensorType": "pressure", "sd": 100, "mean": 2200},
           {"sensorId": 10034, "min_range": 100, "max_range": 140, "unit": "BAR", "sensorType": "pressure", "sd": 10, "mean": 120},
-          {"sensorId": 10035, "min_range": 28, "max_range": 56, "unit": "Psi", "sensorType": "pressure", "sd": 10, "mean": 42},
+          {"sensorId": 10035, "min_range": 28, "max_range": 56, "unit": "Psi", "sensorType": "pressure", "sd": 10, "mean": 42, "deviation_weight": 6},
           {"sensorId": 10021, "min_range": 200, "max_range": 250, "unit": "Celcius", "sensorType": "temperature", "sd": 10, "mean": 230},
           {"sensorId": 10045, "min_range": 6, "max_range": 12, "unit": "L/min", "sensorType": "flow_rate", "sd": 4, "mean": 10}
         ]
